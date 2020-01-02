@@ -25,6 +25,7 @@ import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.models.AbiResponse;
 import top.andnux.scatter.models.TransactionBean;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
+import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransaction;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
@@ -50,7 +51,7 @@ public class MyScatterClient extends ScatterClient {
     }
 
     @Override
-    public void getAccount(AccountReceived onAccountReceived) {
+    public void getAccount(EosAccount account,AccountReceived onAccountReceived) {
         Log.d(TAG, "getAccount() called with: onAccountReceived = [" + onAccountReceived + "]");
         onAccountReceived.onAccountReceivedSuccessCallback(accountName, "owner", publicKey);
     }

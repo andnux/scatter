@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
                 webView.reload();
             }
         });
-        scatter = ScatterFactory.getScatter(webView, new MyScatterClient(), true);
+        scatter = ScatterFactory.getScatter(webView, new MyScatterClient(), false);
         //设置两个Client，必须设置，本次其实没有用到两个Client的太多功能
         //可以看一下两个Client与webview之间的事件循环周期，增加断点调试
         webView.setWebChromeClient(webChromeClient);

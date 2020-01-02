@@ -12,6 +12,7 @@ import top.andnux.scatter.models.EosChain;
 import top.andnux.scatter.models.ProtocolInfo;
 import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
+import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
@@ -50,6 +51,7 @@ final class ScatterJsService {
     }
 
     static void getEosAccount(final WebView webView, final ScatterClient scatterClient, final ScatterRequest scatterRequest) {
+        EosAccount account = gson.fromJson(scatterRequest.getParams(), EosAccount.class);
         ScatterClient.AccountReceived accountReceived = new ScatterClient.AccountReceived() {
             @Override
             public void onAccountReceivedSuccessCallback(String accountName, String authority, String publicKey) {
@@ -71,7 +73,7 @@ final class ScatterJsService {
             }
         };
 
-        scatterClient.getAccount(accountReceived);
+        scatterClient.getAccount(account,accountReceived);
     }
 
     static void handleRequestSignature(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {

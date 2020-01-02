@@ -4,6 +4,7 @@ import java.util.List;
 
 import top.andnux.scatter.js.models.TransactionRequest;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
+import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
@@ -55,7 +56,7 @@ public abstract class ScatterClient {
 
     public abstract void getAppInfo(AppInfoReceived onAppInfoReceived);
 
-    public abstract void getAccount(AccountReceived onAccountReceived);
+    public abstract void getAccount(EosAccount account,AccountReceived onAccountReceived);
 
     public abstract void completeTransaction(TransactionRequestParams transactionRequestParams,
                                              TransactionCompleted onTransactionCompleted);

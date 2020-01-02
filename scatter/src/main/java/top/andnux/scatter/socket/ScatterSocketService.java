@@ -16,6 +16,7 @@ import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.models.EosChain;
 import top.andnux.scatter.models.ProtocolInfo;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
+import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
@@ -75,7 +76,7 @@ public class ScatterSocketService {
             case IDENTITY_FROM_PERMISSIONS:
             case GET_IDENTITY:
             case GET_OR_REQUEST_IDENTITY: {
-                getIdentity(conn, id, scatterClient);
+                getIdentity(conn, id,payload, scatterClient);
                 break;
             }
             case REQUEST_SIGNATURE: {
@@ -151,7 +152,8 @@ public class ScatterSocketService {
         scatterClient.authenticate(authRequestParams, transactionCompleted);
     }
 
-    private static void getIdentity(final WebSocket conn, final String id, ScatterClient scatterClient) {
+    private static void getIdentity(final WebSocket conn, final String id,String payload, ScatterClient scatterClient) {
+        EosAccount account = gson.fromJson(payload,EosAccount.class);
         ScatterClient.AccountReceived accountReceived = new ScatterClient.AccountReceived() {
             @Override
             public void onAccountReceivedSuccessCallback(String accountName, String authority, String publicKey) {
@@ -177,7 +179,7 @@ public class ScatterSocketService {
             }
         };
 
-        scatterClient.getAccount(accountReceived);
+        scatterClient.getAccount(account,accountReceived);
     }
 
     private static void getPublicKey(final WebSocket conn, final String id, ScatterClient scatterClient) {
