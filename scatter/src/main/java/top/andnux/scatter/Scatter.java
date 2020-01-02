@@ -1,7 +1,5 @@
 package top.andnux.scatter;
 
-import top.andnux.scatter.ScatterClient;
-
 public abstract class Scatter {
 
     protected ScatterClient scatterClient;
