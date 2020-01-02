@@ -1,4 +1,3 @@
-
 function isAndroid() {
     var u = navigator.userAgent;
     if (u.indexOf("Android") > -1 || u.indexOf("Linux") > -1) {
@@ -21,11 +20,12 @@ function _sendPeRequest(callback,params,methodName) {
                 'methodName': methodName
                }
     var json = JSON.stringify(data)
-    console.log(json)
     if (isAndroid()) {
         window.DappJsBridge.pushMessage(json)
     } else if (isIOS()) {
         window.webkit.messageHandlers.pushMessage.postMessage(json)
+    }else{
+        alert("not supported client")
     }
 }
 
@@ -53,8 +53,6 @@ class App {
     }
 
     sendApiRequest(request){
-        console.log("type",JSON.stringify(request.type))
-        console.log("payload",JSON.stringify(request.payload))
         const serialNumber = callbackGenerator();
         _sendPeRequest(serialNumber,request.payload,request.type);
         return new Promise((resolve, reject) => {
@@ -94,11 +92,16 @@ class Index extends App{
 	}
 
 	useIdentity(...args){
-	    console.log(JSON.stringify(args))
+	   return new Promise((resolve,reject) => {
+            window.wallet.sendApiRequest({type:"useIdentity",payload:args})
+            .then(res => {
+                this.identity = res;
+                resolve(res)
+            })
+       });
 	}
 
 	getIdentity(requiredFields) {
-	    console.log("getIdentity.......................")
 		return new Promise((resolve,reject) => {
 		    window.wallet.sendApiRequest({type:"getIdentity",payload:requiredFields})
 		    .then(res => {
@@ -107,13 +110,23 @@ class Index extends App{
 		    })
 		});
 	}
-
-    suggestNetwork(){
-
+    getArbitrarySignature(publicKey, data, whatfor = '', isHash = false) {
+        let params = {
+            publicKey: publicKey,
+            data: data,
+            whatfor: whatfor,
+            isHash: isHash
+        };
+        return new Promise((resolve,reject) => {
+            window.wallet.sendApiRequest({type:"requestArbitrarySignature",payload:params})
+            .then(res => {
+                this.identity = res;
+                   resolve(res)
+            })
+        });
     }
 
 	getIdentityFromPermissions() {
-	    console.log("getIdentityFromPermissions.......................")
 		return new Promise((resolve,reject) => {
             window.wallet.sendApiRequest({type:"getIdentityFromPermissions",payload:{}})
             .then(res => {
@@ -129,7 +142,6 @@ class Index extends App{
 		})
 	}
 	authenticate(nonce) {
-	    console.log("authenticate.......................")
 		return new Promise((resolve,reject) => {
             window.wallet.sendApiRequest({type:"authenticate",payload:nonce})
             .then(res => {
@@ -137,6 +149,51 @@ class Index extends App{
             })
         })
 	}
+
+    getPublicKey(blockchain) {
+         return new Promise((resolve, reject) => {
+            window.wallet.sendApiRequest({type:"identityFromPermissions",payload:param})
+            .then(res => {
+                resolve(res.accounts.filter(x => x.blockchain === 'eos').map(x => x.publicKey))
+            }).catch(e => {reject(e)})
+        })
+    }
+    linkAccount(publicKey, network) {
+        throwNoAuth();
+        return 0
+    }
+    hasAccountFor(network) {
+        throwNoAuth();
+        return 0
+    }
+    suggestNetwork(network) {
+        throwNoAuth();
+        return 0
+    }
+    requestTransfer(network, to, amount, options = {}) {
+        const payload = {
+            network,
+            to,
+            amount,
+            options
+        };
+        return 0
+    }
+    requestSignature(signargs) {
+        return new Promise(async (resolve, reject) => {
+           window.wallet.sendApiRequest({
+              type:'requestSignature',
+              payload:{ transaction:signargs, blockchain:"eos", network, requiredFields:requiredFields }
+          }).then(x => {
+              resolve({signatures:x.signatures,serializedTransaction:signargs.serializedTransaction})
+          }).catch(x => reject(x))
+       })
+    }
+    createTransaction(blockchain, actions, account, network) {
+        throwNoAuth();
+        return 0
+    }
+
 	eos (network, Eos, options) {
         console.log("network:", network)
         console.log("Eos:", Eos)
@@ -146,7 +203,6 @@ class Index extends App{
         if (beta3) {
             class AuthorityProvider {
                 getRequiredKeys = (param) => {
-                    console.log("================",JSON.stringify(param))
                     return new Promise((resolve, reject) => {
                         window.wallet.sendApiRequest({type:"identityFromPermissions",payload:param})
                         .then(res => {
@@ -256,7 +312,6 @@ class Index extends App{
             if (config.httpEndpoint.startsWith("://")) {
                 config.httpEndpoint = config.httpEndpoint.substring(4, config.httpEndpoint.length);
             }
-            console.log("config:" + JSON.stringify(config));
             return Eos(config);
         }
     }

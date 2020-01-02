@@ -47,6 +47,12 @@ class ScatterWebInterface {
                 ScatterJsService.authenticate(webView, scatterClient, scatterRequest);
                 break;
             }
+
+            case ADD_TOKEN: {
+                ScatterJsService.addToken(webView, scatterClient, scatterRequest);
+                break;
+            }
+
             case REQUEST_ARBITRARY_SIGNATURE: {
                 requestMsgSignature(webView, scatterClient, scatterRequest);
                 break;

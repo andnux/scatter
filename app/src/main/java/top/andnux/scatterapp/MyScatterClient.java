@@ -35,13 +35,13 @@ import top.andnux.scatter.util.ScatterHelper;
 
 public class MyScatterClient extends ScatterClient {
 
-    private static final String accountName = "liuliang";
-    private static final String privateKey = "5KXCLfS4b7QSwMVZ3nY3YsZJ4WusnhHw1DkHo5TkQBTWVpKtQHc";
-    private static final String publicKey = "EOS7vwabXPgunsoq286ZXjHXc4oqoP9jqek1TmKANyTYrot4nw2SR";
+//    private static final String accountName = "liuliang";
+//    private static final String privateKey = "5KXCLfS4b7QSwMVZ3nY3YsZJ4WusnhHw1DkHo5TkQBTWVpKtQHc";
+//    private static final String publicKey = "EOS7vwabXPgunsoq286ZXjHXc4oqoP9jqek1TmKANyTYrot4nw2SR";
 
-//    private static final String accountName = "zhangchunlin";
-//    private static final String privateKey = "5JNNm5t64sC6HRXT2oMDJJSULyciSHztpqKqdm62RHChvBjmMSB";
-//    private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
+    private static final String accountName = "zhangchunlin";
+    private static final String privateKey = "5JNNm5t64sC6HRXT2oMDJJSULyciSHztpqKqdm62RHChvBjmMSB";
+    private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
 
     private static final String TAG = "MyScatterClient";
 

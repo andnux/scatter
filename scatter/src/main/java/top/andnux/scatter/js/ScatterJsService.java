@@ -5,6 +5,7 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import com.google.gson.Gson;
+
 import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.js.models.ScatterRequest;
 import top.andnux.scatter.js.models.ScatterResponse;
@@ -190,5 +191,10 @@ final class ScatterJsService {
                 });
             }
         });
+    }
+
+    static void addToken(WebView webView, ScatterClient scatterClient, ScatterRequest scatterRequest) {
+
+
     }
 }

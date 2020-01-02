@@ -29,6 +29,7 @@ import top.andnux.scatter.models.response.ResultCode;
 import top.andnux.scatter.socket.models.response.ApiResponseData;
 import top.andnux.scatter.socket.models.response.CommandsResponse;
 
+import static top.andnux.scatter.models.Type.ADD_TOKEN;
 import static top.andnux.scatter.models.Type.AUTHENTICATE;
 import static top.andnux.scatter.models.Type.FORGET_IDENTITY;
 import static top.andnux.scatter.models.Type.GET_IDENTITY;
@@ -40,7 +41,6 @@ import static top.andnux.scatter.models.Type.LINK_ACCOUNT;
 import static top.andnux.scatter.models.Type.REQUEST_ADD_NETWORK;
 import static top.andnux.scatter.models.Type.REQUEST_ARBITRARY_SIGNATURE;
 import static top.andnux.scatter.models.Type.REQUEST_SIGNATURE;
-import static top.andnux.scatter.models.Type.REQUEST_TRANSFER;
 import static top.andnux.scatter.socket.SocketsConstants.MESSAGE_START;
 
 public class ScatterSocketService {
@@ -97,6 +97,12 @@ public class ScatterSocketService {
                 requestMsgSignature(conn, id, payload, scatterClient);
                 break;
             }
+
+            case ADD_TOKEN: {
+                ScatterSocketService.addToken(conn, id, payload, scatterClient);
+                break;
+            }
+
             case GET_PUBLIC_KEY: {
                 getPublicKey(conn, id, scatterClient);
                 break;
@@ -104,6 +110,11 @@ public class ScatterSocketService {
             default:
                 break;
         }
+    }
+
+    private static void addToken(WebSocket conn, String id, String payload, ScatterClient scatterClient) {
+
+
     }
 
     private static void handleRequestSignature(final WebSocket conn, final String id,
