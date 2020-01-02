@@ -158,7 +158,7 @@ class Index extends App{
             class SignatureProvider {
                 getAvailableKeys = () => {
                     return new Promise((resolve, reject) => {
-                        window.wallet.sendApiRequest({type:"identityFromPermissions",payload:{}})
+                        window.wallet.sendApiRequest({type:"identityFromPermissions",payload:network})
                         .then(res => {
                             resolve(res.accounts.map(x => x.publicKey))
                         }).catch(e => {reject(e)})
@@ -174,9 +174,15 @@ class Index extends App{
                       }
                       return dataString
                 }
+                uint8ArrayToString = (fileData) =>{
+                     var dataString = "";
+                     for (var i = 0; i < fileData.length; i++) {
+                       dataString += String.fromCharCode(fileData[i]);
+                     }
+                     return dataString
+                }
                 sign = (signargs) => {
                     const requiredFields = {};
-                    console.log(signargs.serializedTransaction)
                     if(signargs.serializedTransaction){
                         signargs.serializedTransaction = this.uint8ArrayToHex(signargs.serializedTransaction)
                     }

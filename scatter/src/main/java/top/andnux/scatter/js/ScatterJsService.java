@@ -32,7 +32,8 @@ final class ScatterJsService {
         ScatterClient.AppInfoReceived appInfoReceived = new ScatterClient.AppInfoReceived() {
             @Override
             public void onAppInfoReceivedSuccessCallback(String appName, String appVersion) {
-                String responseData = gson.toJson(new AppInfoResponseData(appName, appVersion, ProtocolInfo.name, ProtocolInfo.version));
+                String responseData = gson.toJson(new AppInfoResponseData(appName, appVersion,
+                        ProtocolInfo.name, ProtocolInfo.version));
                 sendResponse(webView, scatterRequest.getCallback(), gson.toJson(
                         new ScatterResponse(ResultCode.SUCCESS.name(),
                                 responseData,
@@ -73,12 +74,11 @@ final class ScatterJsService {
         scatterClient.getAccount(accountReceived);
     }
 
-    public static void handleRequestSignature(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {
+    static void handleRequestSignature(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {
         TransactionRequestParams transactionRequestParams = gson.fromJson(scatterRequest.getParams(), TransactionRequestParams.class);
         if (transactionRequestParams.getBuf() != null) {
             requestSignature(webView, scatterClient, transactionRequestParams, scatterRequest);
         } else {
-            Log.e("+++++++++++++++++++=", scatterRequest.getParams());
             SerializedTransactionRequestParams transactionRequest = gson.fromJson(scatterRequest.getParams(), SerializedTransactionRequestParams.class);
             requestSerializedTransactionSignature(webView, transactionRequest, scatterClient, scatterRequest);
         }

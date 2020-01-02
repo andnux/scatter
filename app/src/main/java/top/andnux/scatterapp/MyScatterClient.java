@@ -3,6 +3,7 @@ package top.andnux.scatterapp;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.paytomat.core.util.HashUtil;
 import com.paytomat.eos.Eos;
 import com.paytomat.eos.PrivateKey;
@@ -11,8 +12,18 @@ import com.paytomat.eos.signature.Signature;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import one.block.eosiojava.interfaces.ISerializationProvider;
+import one.block.eosiojava.models.AbiEosSerializationObject;
+import one.block.eosiojavaabieosserializationprovider.AbiEosSerializationProviderImpl;
+import one.block.eosiojavarpcprovider.implementations.EosioJavaRpcProviderImpl;
 import top.andnux.scatter.ScatterClient;
+import top.andnux.scatter.models.AbiResponse;
+import top.andnux.scatter.models.TransactionBean;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransaction;
@@ -57,13 +68,34 @@ public class MyScatterClient extends ScatterClient {
     public void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams,
                                               SerializedTransactionCompleted onTransactionCompleted) {
         try {
-            Log.d(TAG, "completeSerializedTransaction() called with: serializedTransactionRequestParams = [" +
-                    serializedTransactionRequestParams + "]," +
-                    " onTransactionCompleted = [" + onTransactionCompleted + "]");
-            SerializedTransaction transaction = serializedTransactionRequestParams.getTransaction();
+            SerializedTransactionRequestParams.Network network = serializedTransactionRequestParams.getNetwork();
+            ISerializationProvider abieos = new AbiEosSerializationProviderImpl();
+            SerializedTransaction paramsTransaction = serializedTransactionRequestParams.getTransaction();
+            String transactionJson = abieos.deserializeTransaction(paramsTransaction.getSerializedTransaction());
+            String baseURL = network.toUrl();
+            EosioJavaRpcProviderImpl provider = new EosioJavaRpcProviderImpl(baseURL);
+            Gson gson = new Gson();
+            TransactionBean bean = gson.fromJson(transactionJson, TransactionBean.class);
+            List<TransactionBean.ActionsBean> actions = bean.getActions();
+            for (TransactionBean.ActionsBean action : actions) {
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                HashMap<String, String> map = new HashMap<>();
+                map.put("account_name", action.getAccount());
+                String abi = provider.getAbi(RequestBody.create(JSON, String.valueOf(gson.toJson(map))));
+                AbiResponse.AbiBean abiBean = gson.fromJson(abi, AbiResponse.class).getAbi();
+                abi = gson.toJson(abiBean);
+                AbiEosSerializationObject serializationObject = new AbiEosSerializationObject(action.getAccount(),
+                        action.getName(), null, abi);
+                serializationObject.setHex(action.getData().toString());
+                abieos.deserialize(serializationObject);
+                String json = serializationObject.getJson();
+                action.setData(json);
+            }
+            String json = gson.toJson(bean);
+            Log.d(TAG, json);
             String[] signatures = ScatterHelper.getSignaturesForSerializedTransaction(
-                    transaction.getSerializedTransaction(),
-                    transaction.getChainId(), new PrivateKey(privateKey));
+                    paramsTransaction.getSerializedTransaction(),
+                    paramsTransaction.getChainId(), new PrivateKey(privateKey));
             onTransactionCompleted.onTransactionCompletedSuccessCallback(signatures);
         } catch (Exception e) {
             e.printStackTrace();

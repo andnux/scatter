@@ -100,18 +100,9 @@ public class ScatterSocketService {
                 getPublicKey(conn, id, scatterClient);
                 break;
             }
-            case REQUEST_TRANSFER: {
-                requestTransfer(conn, id, payload, scatterClient);
-                break;
-            }
             default:
                 break;
         }
-    }
-
-    private static void requestTransfer(WebSocket conn, String id, String payload, ScatterClient scatterClient) {
-//        scatterClient.requestTransfer();
-
     }
 
     private static void handleRequestSignature(final WebSocket conn, final String id,

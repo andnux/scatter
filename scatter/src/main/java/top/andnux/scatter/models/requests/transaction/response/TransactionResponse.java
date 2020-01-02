@@ -18,4 +18,20 @@ public class TransactionResponse {
                 ", returnedFields=" + returnedFields +
                 '}';
     }
+
+    public String[] getSignatures() {
+        return signatures;
+    }
+
+    public void setSignatures(String[] signatures) {
+        this.signatures = signatures;
+    }
+
+    public ReturnedFields getReturnedFields() {
+        return returnedFields;
+    }
+
+    public void setReturnedFields(ReturnedFields returnedFields) {
+        this.returnedFields = returnedFields;
+    }
 }

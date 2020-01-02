@@ -1,6 +1,9 @@
 package top.andnux.scatter.models.requests.serializedtransaction;
 
+import java.util.List;
+
 public class SerializedTransaction {
+
     private String chainId;
     private String serializedTransaction;
     private String[] requiredKeys;

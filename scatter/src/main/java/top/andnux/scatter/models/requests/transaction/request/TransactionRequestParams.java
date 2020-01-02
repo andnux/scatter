@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class TransactionRequestParams {
+
     private Transaction transaction;
     private Buf buf;
 
