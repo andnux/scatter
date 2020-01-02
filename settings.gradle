@@ -1,2 +1,2 @@
-include ':app', ':scatter'
-rootProject.name='ScatterApp'
+include ':app', ':library'
+rootProject.name='scatter'
