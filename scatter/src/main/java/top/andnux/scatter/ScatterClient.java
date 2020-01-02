@@ -53,27 +53,6 @@ public abstract class ScatterClient {
         void onPublicKeyReceivedErrorCallback(Error error);
     }
 
-    public interface AuthenticateCompleted {
-
-        void onAuthenticateCompletedSuccessCallback(String signatures);
-
-        void onAuthenticateCompletedErrorCallback(ResultCode resultCode, String messageToUser);
-    }
-
-    public interface RequestTransferCompleted {
-
-        void onRequestTransferCompletedSuccessCallback(String signatures);
-
-        void onRequestTransferCompletedErrorCallback(ResultCode resultCode, String messageToUser);
-    }
-
-    public interface TransactionCallback {
-
-        void onTransactionSuccessCallback(List<String> signatures);
-
-        void onTransactionErrorCallback(ResultCode resultCode, String messageToUser);
-    }
-
     public abstract void getAppInfo(AppInfoReceived onAppInfoReceived);
 
     public abstract void getAccount(AccountReceived onAccountReceived);
@@ -83,9 +62,6 @@ public abstract class ScatterClient {
 
     public abstract void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams,
                                                        SerializedTransactionCompleted onSerializedTransactionCompleted);
-
-    public abstract void transaction(TransactionRequest transactionRequest,
-                                                       TransactionCallback transactionCallback);
 
     public abstract void completeMsgTransaction(MsgTransactionRequestParams msgTransactionRequestParams,
                                                 MsgTransactionCompleted onMsgTransactionMsgCompleted);

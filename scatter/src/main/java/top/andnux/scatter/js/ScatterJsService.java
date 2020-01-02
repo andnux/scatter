@@ -5,14 +5,9 @@ import android.webkit.ValueCallback;
 import android.webkit.WebView;
 
 import com.google.gson.Gson;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.js.models.ScatterRequest;
 import top.andnux.scatter.js.models.ScatterResponse;
-import top.andnux.scatter.js.models.TransactionRequest;
 import top.andnux.scatter.models.EosChain;
 import top.andnux.scatter.models.ProtocolInfo;
 import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
@@ -26,7 +21,6 @@ import top.andnux.scatter.models.requests.transaction.response.ReturnedFields;
 import top.andnux.scatter.models.requests.transaction.response.TransactionResponse;
 import top.andnux.scatter.models.response.ErrorResponse;
 import top.andnux.scatter.models.response.ResultCode;
-import top.andnux.scatter.socket.models.response.CommandsResponse;
 
 final class ScatterJsService {
     final static private Gson gson = new Gson();

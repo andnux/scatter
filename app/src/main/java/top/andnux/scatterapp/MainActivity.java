@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressbar);//进度条
         webView = findViewById(R.id.webview);
         mRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        webView.loadUrl("http://192.168.1.206:8080/mock-sites/eosjs/");
+//        webView.loadUrl("http://192.168.1.206:8080/mock-sites/eosjs2/");
 //        webView.loadUrl("https://www.ggsplay.com/#/");//加载url
 //        webView.loadUrl("https://www.eosx.io");//加载url
 //        webView.loadUrl("http://192.168.1.185:9529");//加载url
@@ -44,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
 //        webView.loadUrl("http://beta.ggsplay.com:8001/#/");
 //        webView.loadUrl("https://chain.pro/candybox");
 //        webView.loadUrl("https://bloks.io/");
-//        webView.loadUrl("http://192.168.1.185:9529/#/");
+        webView.loadUrl("http://192.168.1.185:9529/#/");
+//        webView.loadUrl("https://dice.one/");
+//        webView.loadUrl("https://earnbet.io/");
+//        webView.loadUrl("https://dappspinach.io/dapp/pc/dist/#/main/home");
         mRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

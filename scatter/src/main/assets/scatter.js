@@ -179,16 +179,12 @@ class Index extends App{
                     console.log(signargs.serializedTransaction)
                     if(signargs.serializedTransaction){
                         signargs.serializedTransaction = this.uint8ArrayToHex(signargs.serializedTransaction)
-                        signargs.abis=[]
                     }
                     return new Promise(async (resolve, reject) => {
                         window.wallet.sendApiRequest({
                            type:'requestSignature',
                            payload:{ transaction:signargs, blockchain:"eos", network, requiredFields:requiredFields }
                        }).then(x => {
-                           if(signargs.serializedTransaction){
-                               signargs.serializedTransaction =  this.uint8ArrayToHex(signargs.serializedTransaction)
-                           }
                            resolve({signatures:x.signatures,serializedTransaction:signargs.serializedTransaction})
                        }).catch(x => reject(x))
                    })
