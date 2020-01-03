@@ -1,7 +1,6 @@
 package top.andnux.scatterapp;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.paytomat.core.util.HashUtil;
@@ -24,13 +23,14 @@ import one.block.eosiojavarpcprovider.implementations.EosioJavaRpcProviderImpl;
 import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.models.AbiResponse;
 import top.andnux.scatter.models.TransactionBean;
+import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
+import top.andnux.scatter.models.requests.eosaccount.EosAccount;
+import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransaction;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
-import top.andnux.scatter.models.response.AccountReceivedResponse;
-import top.andnux.scatter.models.response.AppInfoResponse;
 import top.andnux.scatter.models.response.ResultCode;
 import top.andnux.scatter.util.ScatterHelper;
 
@@ -45,13 +45,16 @@ public class MyScatterClient implements ScatterClient {
     private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
 
     @Override
-    public void getAppInfo(Callback<AppInfoResponse> callback) {
-        callback.onSuccess(new AppInfoResponse("1.0.0", "1"));
+    public void getAppInfo(Callback<AppInfoResponseData> callback) {
+        callback.onSuccess(new AppInfoResponseData("1.0.0", "1",
+                "1.0.0", "1"));
     }
 
     @Override
-    public void getAccount(Callback<AccountReceivedResponse> callback) {
-        callback.onSuccess(new AccountReceivedResponse(accountName, "owner", publicKey));
+    public void getAccount(EosAccount account, Callback<Account> callback) {
+        EosAccount.AccountsBean bean = account.getAccounts().get(0);
+        callback.onSuccess(new Account(accountName, "owner", publicKey, "eos",
+                bean.getChainId(), false));
     }
 
     @Override

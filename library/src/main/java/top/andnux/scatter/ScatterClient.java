@@ -1,11 +1,12 @@
 package top.andnux.scatter;
 
+import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
+import top.andnux.scatter.models.requests.eosaccount.EosAccount;
+import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
-import top.andnux.scatter.models.response.AccountReceivedResponse;
-import top.andnux.scatter.models.response.AppInfoResponse;
 import top.andnux.scatter.models.response.ResultCode;
 
 public interface ScatterClient {
@@ -13,14 +14,15 @@ public interface ScatterClient {
     /*
        返回APP信息
      */
-    void getAppInfo(Callback<AppInfoResponse> callback);
+    void getAppInfo(Callback<AppInfoResponseData> callback);
 
     /**
      * 返回账户信息
      *
+     * @param account
      * @param callback
      */
-    void getAccount(Callback<AccountReceivedResponse> callback);
+    void getAccount(EosAccount account,Callback<Account> callback);
 
     /**
      * 返回签名信息

@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import top.andnux.scatter.ScatterClient;
-import top.andnux.scatter.models.EosChain;
 import top.andnux.scatter.models.ProtocolInfo;
+import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.getaccount.Account;
@@ -130,150 +130,136 @@ public class ScatterSocketService {
     }
 
     private static void getVersion(final WebSocket conn, final String id, ScatterClient scatterClient) {
-        sendResponse(conn,
-                gson.toJson(
-                        new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
-                                gson.toJson("10.1.0")
-                        )))
-                )
-        );
-    }
-
-    private static void authenticate(final WebSocket conn, final String id, String payload, ScatterClient scatterClient) {
-        AuthenticateRequestParams authRequestParams = gson.fromJson(payload, AuthenticateRequestParams.class);
-
-        ScatterClient.MsgTransactionCompleted transactionCompleted = new ScatterClient.MsgTransactionCompleted() {
+        scatterClient.getAppInfo(new ScatterClient.Callback<AppInfoResponseData>() {
             @Override
-            public void onMsgTransactionCompletedSuccessCallback(String signature) {
+            public void onSuccess(AppInfoResponseData data) {
                 sendResponse(conn,
-                        gson.toJson(
-                                new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
-                                        gson.toJson(signature)
-                                )))
-                        )
+                        gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
+                                new ApiResponseData(id, gson.toJson(data)))))
                 );
             }
 
             @Override
-            public void onMsgTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser) {
-                sendErrorResponse(conn, id, resultCode, messageToUser);
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
             }
-        };
+        });
 
-        scatterClient.authenticate(authRequestParams, transactionCompleted);
+    }
+
+    private static void authenticate(final WebSocket conn, final String id, String payload, ScatterClient scatterClient) {
+        AuthenticateRequestParams authRequestParams = gson.fromJson(payload, AuthenticateRequestParams.class);
+        scatterClient.authenticate(authRequestParams, new ScatterClient.Callback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                sendResponse(conn,
+                        gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
+                                new ApiResponseData(id, gson.toJson(data)))))
+                );
+            }
+
+            @Override
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
+            }
+        });
     }
 
     private static void getIdentity(final WebSocket conn, final String id,String payload, ScatterClient scatterClient) {
-        EosAccount account = gson.fromJson(payload,EosAccount.class);
-        ScatterClient.AccountReceived accountReceived = new ScatterClient.AccountReceived() {
+        final EosAccount account = gson.fromJson(payload, EosAccount.class);
+
+        scatterClient.getAccount(account, new ScatterClient.Callback<Account>() {
             @Override
-            public void onAccountReceivedSuccessCallback(String accountName, String authority, String publicKey) {
+            public void onSuccess(Account data) {
                 sendResponse(conn,
                         gson.toJson(
                                 new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
                                         gson.toJson(new GetAccountResponse(
                                                 "db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
-                                                publicKey,
+                                                data.getPublicKey(),
                                                 ProtocolInfo.name,
                                                 false,
-                                                new Account[]{
-                                                        new Account(accountName, authority,
-                                                                publicKey, EosChain.chainName,
-                                                                EosChain.chainId, false)}))
+                                                new Account[]{data})
                                 )))
                         )
-                );
+                ));
             }
 
             @Override
-            public void onAccountReceivedErrorCallback(Error error) {
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
             }
-        };
-
-        scatterClient.getAccount(account,accountReceived);
+        });
     }
 
     private static void getPublicKey(final WebSocket conn, final String id, ScatterClient scatterClient) {
-        ScatterClient.PublicKeyReceived publicKeyReceived = new ScatterClient.PublicKeyReceived() {
+
+        scatterClient.getPublicKey(new ScatterClient.Callback<String>() {
             @Override
-            public void onPublicKeyReceivedSuccessCallback(String publicKey) {
-                sendResponse(conn,
-                        gson.toJson(
-                                new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
-                                        gson.toJson(publicKey)
-                                )))
-                        )
-                );
+            public void onSuccess(String data) {
+                sendResponse(conn, gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
+                        new ApiResponseData(id, gson.toJson(data))))));
             }
 
             @Override
-            public void onPublicKeyReceivedErrorCallback(Error error) {
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
             }
-        };
-
-        scatterClient.getPublicKey(publicKeyReceived);
+        });
     }
 
     private static void requestSignature(final WebSocket conn, final String id,
                                          TransactionRequestParams transactionRequestParams,
                                          ScatterClient scatterClient) {
-        ScatterClient.TransactionCompleted transactionCompleted = new ScatterClient.TransactionCompleted() {
+        scatterClient.completeTransaction(transactionRequestParams, new ScatterClient.Callback<String[]>() {
             @Override
-            public void onTransactionCompletedSuccessCallback(String[] signatures) {
+            public void onSuccess(String[] data) {
                 sendResponse(conn,
-                        gson.toJson(
-                                new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
-                                        gson.toJson(new TransactionResponse(signatures, new ReturnedFields()))
-                                )))
-                        )
+                        gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
+                                gson.toJson(new TransactionResponse(data, new ReturnedFields()))))))
                 );
             }
 
             @Override
-            public void onTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser) {
-                sendErrorResponse(conn, id, resultCode, messageToUser);
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
             }
-        };
-
-        scatterClient.completeTransaction(transactionRequestParams, transactionCompleted);
+        });
     }
 
     private static void requestSerializedTransactionSignature(final WebSocket conn, final String id,
                                                               SerializedTransactionRequestParams serializedTransactionRequestParams,
                                                               ScatterClient scatterClient) {
-        ScatterClient.SerializedTransactionCompleted transactionCompleted = new ScatterClient.SerializedTransactionCompleted() {
+        scatterClient.completeSerializedTransaction(serializedTransactionRequestParams, new ScatterClient.Callback<String[]>() {
             @Override
-            public void onTransactionCompletedSuccessCallback(String[] signatures) {
+            public void onSuccess(String[] data) {
                 sendResponse(conn, gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
-                        new ApiResponseData(id, gson.toJson(new TransactionResponse(signatures, new ReturnedFields())))))));
+                        new ApiResponseData(id, gson.toJson(new TransactionResponse(data, new ReturnedFields())))))));
             }
 
             @Override
-            public void onTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser) {
-                sendErrorResponse(conn, id, resultCode, messageToUser);
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
             }
-        };
-
-        scatterClient.completeSerializedTransaction(serializedTransactionRequestParams, transactionCompleted);
+        });
     }
 
     private static void requestMsgSignature(final WebSocket conn, final String id,
                                             String payload, ScatterClient scatterClient) {
         MsgTransactionRequestParams msgTransactionRequestParams = gson.fromJson(payload, MsgTransactionRequestParams.class);
-
-        ScatterClient.MsgTransactionCompleted transactionCompleted = new ScatterClient.MsgTransactionCompleted() {
+        scatterClient.completeMsgTransaction(msgTransactionRequestParams, new ScatterClient.Callback<String>() {
             @Override
-            public void onMsgTransactionCompletedSuccessCallback(String signature) {
-                sendResponse(conn, gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id, gson.toJson(signature))))));
+            public void onSuccess(String data) {
+                sendResponse(conn, gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
+                        new ApiResponseData(id, gson.toJson(data))))));
+
             }
 
             @Override
-            public void onMsgTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser) {
-                sendErrorResponse(conn, id, resultCode, messageToUser);
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorResponse(conn, id, resultCode, message);
             }
-        };
-
-        scatterClient.completeMsgTransaction(msgTransactionRequestParams, transactionCompleted);
+        });
     }
 
     private static void sendErrorResponse(WebSocket conn, String id,
