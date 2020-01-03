@@ -39,7 +39,7 @@ public class EosAccount implements Serializable {
 
         private String blockchain;
         private String host;
-        private int port;
+        private String port;
         private String protocol;
         private String chainId;
         private String httpEndpoint;
@@ -60,11 +60,11 @@ public class EosAccount implements Serializable {
             this.host = host;
         }
 
-        public int getPort() {
+        public String getPort() {
             return port;
         }
 
-        public void setPort(int port) {
+        public void setPort(String port) {
             this.port = port;
         }
 

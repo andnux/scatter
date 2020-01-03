@@ -37,13 +37,13 @@ import top.andnux.scatter.util.ScatterHelper;
 
 public class MyScatterClient implements ScatterClient {
 
-//    private static final String accountName = "liuliang";
-//    private static final String privateKey = "5KXCLfS4b7QSwMVZ3nY3YsZJ4WusnhHw1DkHo5TkQBTWVpKtQHc";
-//    private static final String publicKey = "EOS7vwabXPgunsoq286ZXjHXc4oqoP9jqek1TmKANyTYrot4nw2SR";
+    private static final String accountName = "liuliang";
+    private static final String privateKey = "5KXCLfS4b7QSwMVZ3nY3YsZJ4WusnhHw1DkHo5TkQBTWVpKtQHc";
+    private static final String publicKey = "EOS7vwabXPgunsoq286ZXjHXc4oqoP9jqek1TmKANyTYrot4nw2SR";
 
-    private static final String accountName = "zhangchunlin";
-    private static final String privateKey = "5JNNm5t64sC6HRXT2oMDJJSULyciSHztpqKqdm62RHChvBjmMSB";
-    private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
+//    private static final String accountName = "zhangchunlin";
+//    private static final String privateKey = "5JNNm5t64sC6HRXT2oMDJJSULyciSHztpqKqdm62RHChvBjmMSB";
+//    private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
 
     @Override
     public void getAppInfo(Callback<AppInfoResponseData> callback) {
@@ -53,12 +53,20 @@ public class MyScatterClient implements ScatterClient {
 
     @Override
     public void getAccount(EosAccount account, Callback<GetAccountResponse> callback) {
-        EosAccount.AccountsBean bean = account.getAccounts().get(0);
-        Account acc = new Account(accountName, "owner", publicKey, "eos",
-                bean.getChainId(), false);
-        GetAccountResponse data = new GetAccountResponse("db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
-                acc.getPublicKey(), acc.getName(),false,new Account[]{acc});
-        callback.onSuccess(data);
+        if (account != null && account.getAccounts() != null && account.getAccounts().size() > 0) {
+            EosAccount.AccountsBean bean = account.getAccounts().get(0);
+            Account acc = new Account(accountName, "owner", publicKey, "eos",
+                    bean.getChainId(), false);
+            GetAccountResponse data = new GetAccountResponse("db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
+                    acc.getPublicKey(), acc.getName(), false, new Account[]{acc});
+            callback.onSuccess(data);
+        } else {
+            Account acc = new Account(accountName, "owner", publicKey, "eos",
+                    "aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906", false);
+            GetAccountResponse data = new GetAccountResponse("db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
+                    acc.getPublicKey(), acc.getName(), false, new Account[]{acc});
+            callback.onSuccess(data);
+        }
     }
 
     @Override
@@ -95,8 +103,7 @@ public class MyScatterClient implements ScatterClient {
                 action.setData(json);
             }
             String[] signatures = ScatterHelper.getSignaturesForSerializedTransaction(
-                    paramsTransaction.getSerializedTransaction(),
-                    paramsTransaction.getChainId(), new PrivateKey(privateKey));
+                    paramsTransaction.getSerializedTransaction(), paramsTransaction.getChainId(), new PrivateKey(privateKey));
             callback.onSuccess(signatures);
         } catch (Exception e) {
             e.printStackTrace();

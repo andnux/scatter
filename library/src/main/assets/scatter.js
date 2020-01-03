@@ -84,6 +84,17 @@ class App {
     }
 }
 
+var uint8ArrayToHex = (fileData) => {
+   var dataString = "";
+   for (var i = 0; i < fileData.length; i++) {
+       if(fileData[i] <= 0xf){
+            dataString += "0"
+       }
+       dataString += fileData[i].toString(16);
+   }
+   return dataString
+}
+
 class Index extends App{
 	constructor() {
 	    super();
@@ -150,7 +161,7 @@ class Index extends App{
         })
 	}
 
-    getPublicKey(blockchain) {
+    getPublicKey(param) {
          return new Promise((resolve, reject) => {
             window.wallet.sendApiRequest({type:"identityFromPermissions",payload:param})
             .then(res => {
@@ -159,15 +170,50 @@ class Index extends App{
         })
     }
 
-    requestSignature(signargs) {
+    linkAccount(publicKey, network) {
+           throwNoAuth();
+           return 0
+    }
+    hasAccountFor(network) {
+        throwNoAuth();
+        return 0
+    }
+    suggestNetwork(network) {
+        throwNoAuth();
+        return 0
+    }
+    requestTransfer(network, to, amount, options = {}) {
+        console.log(JSON.stringify(network))
+        console.log(JSON.stringify(to))
+        console.log(JSON.stringify(amount))
+        console.log(JSON.stringify(options))
         return new Promise(async (resolve, reject) => {
            window.wallet.sendApiRequest({
-              type:'requestSignature',
-              payload:{ transaction:signargs, blockchain:"eos", network, requiredFields:requiredFields }
+              type:'requestTransfer',
+              payload:{ network:network, to:to, amount:amount,options:options}
           }).then(x => {
               resolve({signatures:x.signatures,serializedTransaction:signargs.serializedTransaction})
           }).catch(x => reject(x))
        })
+    }
+    requestSignature(signargs) {
+        return new Promise(async (resolve, reject) => {
+           window.wallet.sendApiRequest({
+              type:'requestSignature',
+              payload:{ transaction:signargs, blockchain:"eos", requiredFields:requiredFields }
+          }).then(x => {
+              resolve({signatures:x.signatures,serializedTransaction:signargs.serializedTransaction})
+          }).catch(x => reject(x))
+       })
+    }
+    createTransaction(blockchain, actions, account, network) {
+        throwNoAuth();
+        return 0
+    }
+
+    transact(t,e){
+        throwNoAuth();
+        return 0
     }
 
 	eos (network, Eos, options) {
@@ -196,16 +242,7 @@ class Index extends App{
                         }).catch(e => {reject(e)})
                     })
                 }
-                uint8ArrayToHex = (fileData) => {
-                      var dataString = "";
-                      for (var i = 0; i < fileData.length; i++) {
-                          if(fileData[i] < 0xf){
-                               dataString+="0"
-                          }
-                          dataString += fileData[i].toString(16);
-                      }
-                      return dataString
-                }
+
                 uint8ArrayToString = (fileData) =>{
                      var dataString = "";
                      for (var i = 0; i < fileData.length; i++) {
@@ -216,7 +253,8 @@ class Index extends App{
                 sign = (signargs) => {
                     const requiredFields = {};
                     if(signargs.serializedTransaction){
-                        signargs.serializedTransaction = this.uint8ArrayToHex(signargs.serializedTransaction)
+                        console.log(signargs.serializedTransaction)
+                        signargs.serializedTransaction = uint8ArrayToHex(signargs.serializedTransaction)
                     }
                     return new Promise(async (resolve, reject) => {
                         window.wallet.sendApiRequest({
@@ -301,3 +339,4 @@ function inject() {
     document.dispatchEvent(new CustomEvent('scatterLoaded'))
 }
 inject();
+console.log("注入成功...")

@@ -1,6 +1,6 @@
 package top.andnux.scatter.models.requests.serializedtransaction;
 
-import java.util.List;
+import android.text.TextUtils;
 
 public class SerializedTransactionRequestParams {
 
@@ -47,13 +47,13 @@ public class SerializedTransactionRequestParams {
         private String name;
         private String protocol;
         private String host;
-        private int port;
+        private String port;
         private String blockchain;
         private String chainId;
         private Object token;
 
         public String toUrl() {
-            if (port <= 0) {
+            if (TextUtils.isEmpty(port)) {
                 return protocol + "://" + host + "/";
             } else {
                 return protocol + "://" + host + ":" + port + "/";
@@ -84,11 +84,11 @@ public class SerializedTransactionRequestParams {
             this.host = host;
         }
 
-        public int getPort() {
+        public String getPort() {
             return port;
         }
 
-        public void setPort(int port) {
+        public void setPort(String port) {
             this.port = port;
         }
 
