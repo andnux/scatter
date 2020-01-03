@@ -4,6 +4,7 @@ import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.getaccount.Account;
+import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
@@ -22,7 +23,7 @@ public interface ScatterClient {
      * @param account
      * @param callback
      */
-    void getAccount(EosAccount account,Callback<Account> callback);
+    void getAccount(EosAccount account,Callback<GetAccountResponse> callback);
 
     /**
      * 返回签名信息

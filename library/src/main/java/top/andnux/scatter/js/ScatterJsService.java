@@ -9,19 +9,15 @@ import com.google.gson.Gson;
 import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.js.models.ScatterRequest;
 import top.andnux.scatter.js.models.ScatterResponse;
-import top.andnux.scatter.models.EosChain;
-import top.andnux.scatter.models.ProtocolInfo;
 import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.eosaccount.EosAccount;
-import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.response.ReturnedFields;
 import top.andnux.scatter.models.requests.transaction.response.TransactionResponse;
-import top.andnux.scatter.models.response.AppInfoResponse;
 import top.andnux.scatter.models.response.ErrorResponse;
 import top.andnux.scatter.models.response.ResultCode;
 
@@ -52,18 +48,12 @@ final class ScatterJsService {
 
     static void getEosAccount(final WebView webView, final ScatterClient scatterClient, final ScatterRequest scatterRequest) {
         EosAccount account = gson.fromJson(scatterRequest.getParams(), EosAccount.class);
-        scatterClient.getAccount(account, new ScatterClient.Callback<Account>() {
+        scatterClient.getAccount(account, new ScatterClient.Callback<GetAccountResponse>() {
             @Override
-            public void onSuccess(Account data) {
+            public void onSuccess(GetAccountResponse data) {
                 sendResponse(webView, scatterRequest.getCallback(), gson.toJson(
-                        new ScatterResponse(ResultCode.SUCCESS.name(), gson.toJson(
-                                new GetAccountResponse(
-                                        "db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
-                                        data.getPublicKey(),
-                                        ProtocolInfo.name,
-                                        false,
-                                        new Account[]{data})
-                        ), ResultCode.SUCCESS.getCode())
+                        new ScatterResponse(ResultCode.SUCCESS.name(), gson.toJson(data),
+                                ResultCode.SUCCESS.getCode())
                 ));
             }
 

@@ -27,6 +27,7 @@ import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.getaccount.Account;
+import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransaction;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
@@ -51,10 +52,13 @@ public class MyScatterClient implements ScatterClient {
     }
 
     @Override
-    public void getAccount(EosAccount account, Callback<Account> callback) {
+    public void getAccount(EosAccount account, Callback<GetAccountResponse> callback) {
         EosAccount.AccountsBean bean = account.getAccounts().get(0);
-        callback.onSuccess(new Account(accountName, "owner", publicKey, "eos",
-                bean.getChainId(), false));
+        Account acc = new Account(accountName, "owner", publicKey, "eos",
+                bean.getChainId(), false);
+        GetAccountResponse data = new GetAccountResponse("db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
+                acc.getPublicKey(), acc.getName(),false,new Account[]{acc});
+        callback.onSuccess(data);
     }
 
     @Override

@@ -167,22 +167,11 @@ public class ScatterSocketService {
 
     private static void getIdentity(final WebSocket conn, final String id,String payload, ScatterClient scatterClient) {
         final EosAccount account = gson.fromJson(payload, EosAccount.class);
-
-        scatterClient.getAccount(account, new ScatterClient.Callback<Account>() {
+        scatterClient.getAccount(account, new ScatterClient.Callback<GetAccountResponse>() {
             @Override
-            public void onSuccess(Account data) {
-                sendResponse(conn,
-                        gson.toJson(
-                                new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
-                                        gson.toJson(new GetAccountResponse(
-                                                "db4960659fb585600be9e0ec48d2e6f4826d6f929c4bcef095356ce51424608d",
-                                                data.getPublicKey(),
-                                                ProtocolInfo.name,
-                                                false,
-                                                new Account[]{data})
-                                )))
-                        )
-                ));
+            public void onSuccess(GetAccountResponse data) {
+                sendResponse(conn, gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
+                        new ApiResponseData(id, gson.toJson(data))))));
             }
 
             @Override
