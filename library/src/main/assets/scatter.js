@@ -158,27 +158,7 @@ class Index extends App{
             }).catch(e => {reject(e)})
         })
     }
-    linkAccount(publicKey, network) {
-        throwNoAuth();
-        return 0
-    }
-    hasAccountFor(network) {
-        throwNoAuth();
-        return 0
-    }
-    suggestNetwork(network) {
-        throwNoAuth();
-        return 0
-    }
-    requestTransfer(network, to, amount, options = {}) {
-        const payload = {
-            network,
-            to,
-            amount,
-            options
-        };
-        return 0
-    }
+
     requestSignature(signargs) {
         return new Promise(async (resolve, reject) => {
            window.wallet.sendApiRequest({
@@ -188,10 +168,6 @@ class Index extends App{
               resolve({signatures:x.signatures,serializedTransaction:signargs.serializedTransaction})
           }).catch(x => reject(x))
        })
-    }
-    createTransaction(blockchain, actions, account, network) {
-        throwNoAuth();
-        return 0
     }
 
 	eos (network, Eos, options) {

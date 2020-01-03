@@ -1,74 +1,75 @@
 package top.andnux.scatter;
 
-import java.util.List;
-
-import top.andnux.scatter.js.models.TransactionRequest;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
-import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
+import top.andnux.scatter.models.response.AccountReceivedResponse;
+import top.andnux.scatter.models.response.AppInfoResponse;
 import top.andnux.scatter.models.response.ResultCode;
 
-public abstract class ScatterClient {
+public interface ScatterClient {
 
-    public interface AppInfoReceived {
+    /*
+       返回APP信息
+     */
+    void getAppInfo(Callback<AppInfoResponse> callback);
 
-        void onAppInfoReceivedSuccessCallback(String appName, String appVersion);
+    /**
+     * 返回账户信息
+     *
+     * @param callback
+     */
+    void getAccount(Callback<AccountReceivedResponse> callback);
 
-        void onAccountReceivedErrorCallback(Error error);
+    /**
+     * 返回签名信息
+     *
+     * @param transactionRequestParams
+     * @param callback
+     */
+    void completeTransaction(TransactionRequestParams transactionRequestParams,
+                             Callback<String[]> callback);
+
+    /**
+     * 返回签名信息
+     *
+     * @param serializedTransactionRequestParams
+     * @param callback
+     */
+    void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams,
+                                       Callback<String[]> callback);
+
+    /**
+     * 返回签名信息
+     *
+     * @param msgTransactionRequestParams
+     * @param callback
+     */
+    void completeMsgTransaction(MsgTransactionRequestParams msgTransactionRequestParams,
+                                Callback<String> callback);
+
+    /**
+     * 返回公钥
+     *
+     * @param callback
+     */
+    void getPublicKey(Callback<String> callback);
+
+    /**
+     * 返回签名信息
+     *
+     * @param authenticateRequestParams
+     * @param callback
+     */
+    void authenticate(AuthenticateRequestParams authenticateRequestParams,
+                      Callback<String> callback);
+
+    interface Callback<T> {
+
+        void onSuccess(T data);
+
+        void onError(ResultCode resultCode, String message);
     }
 
-    public interface AccountReceived {
-
-        void onAccountReceivedSuccessCallback(String accountName, String authority, String publicKey);
-
-        void onAccountReceivedErrorCallback(Error error);
-    }
-
-    public interface TransactionCompleted {
-
-        void onTransactionCompletedSuccessCallback(String[] signatures);
-
-        void onTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser);
-    }
-
-    public interface SerializedTransactionCompleted {
-
-        void onTransactionCompletedSuccessCallback(String[] signatures);
-
-        void onTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser);
-    }
-
-    public interface MsgTransactionCompleted {
-
-        void onMsgTransactionCompletedSuccessCallback(String signature);
-
-        void onMsgTransactionCompletedErrorCallback(ResultCode resultCode, String messageToUser);
-    }
-
-    public interface PublicKeyReceived {
-
-        void onPublicKeyReceivedSuccessCallback(String publicKey);
-
-        void onPublicKeyReceivedErrorCallback(Error error);
-    }
-
-    public abstract void getAppInfo(AppInfoReceived onAppInfoReceived);
-
-    public abstract void getAccount(EosAccount account,AccountReceived onAccountReceived);
-
-    public abstract void completeTransaction(TransactionRequestParams transactionRequestParams,
-                                             TransactionCompleted onTransactionCompleted);
-
-    public abstract void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams,
-                                                       SerializedTransactionCompleted onSerializedTransactionCompleted);
-
-    public abstract void completeMsgTransaction(MsgTransactionRequestParams msgTransactionRequestParams,
-                                                MsgTransactionCompleted onMsgTransactionMsgCompleted);
-
-    public abstract void getPublicKey(PublicKeyReceived onPublicKeyReceived);
-
-    public abstract void authenticate(AuthenticateRequestParams authenticateRequestParams,
-                                      MsgTransactionCompleted onMsgTransactionMsgCompleted);
 }

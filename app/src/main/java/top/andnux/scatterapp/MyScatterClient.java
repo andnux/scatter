@@ -25,15 +25,16 @@ import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.models.AbiResponse;
 import top.andnux.scatter.models.TransactionBean;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
-import top.andnux.scatter.models.requests.eosaccount.EosAccount;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransaction;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
+import top.andnux.scatter.models.response.AccountReceivedResponse;
+import top.andnux.scatter.models.response.AppInfoResponse;
 import top.andnux.scatter.models.response.ResultCode;
 import top.andnux.scatter.util.ScatterHelper;
 
-public class MyScatterClient extends ScatterClient {
+public class MyScatterClient implements ScatterClient {
 
 //    private static final String accountName = "liuliang";
 //    private static final String privateKey = "5KXCLfS4b7QSwMVZ3nY3YsZJ4WusnhHw1DkHo5TkQBTWVpKtQHc";
@@ -43,31 +44,25 @@ public class MyScatterClient extends ScatterClient {
     private static final String privateKey = "5JNNm5t64sC6HRXT2oMDJJSULyciSHztpqKqdm62RHChvBjmMSB";
     private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
 
-    private static final String TAG = "MyScatterClient";
-
     @Override
-    public void getAppInfo(AppInfoReceived onAppInfoReceived) {
-        Log.d(TAG, "getAppInfo() called with: onAppInfoReceived = [" + onAppInfoReceived + "]");
+    public void getAppInfo(Callback<AppInfoResponse> callback) {
+        callback.onSuccess(new AppInfoResponse("1.0.0", "1"));
     }
 
     @Override
-    public void getAccount(EosAccount account,AccountReceived onAccountReceived) {
-        Log.d(TAG, "getAccount() called with: onAccountReceived = [" + onAccountReceived + "]");
-        onAccountReceived.onAccountReceivedSuccessCallback(accountName, "owner", publicKey);
+    public void getAccount(Callback<AccountReceivedResponse> callback) {
+        callback.onSuccess(new AccountReceivedResponse(accountName, "owner", publicKey));
     }
 
     @Override
-    public void completeTransaction(TransactionRequestParams transactionRequestParams,
-                                    TransactionCompleted onTransactionCompleted) {
-        Log.d(TAG, "completeTransaction() called with: transactionRequestParams = [" + transactionRequestParams + "]," +
-                " onTransactionCompleted = [" + onTransactionCompleted + "]");
-        String[] signatures = ScatterHelper.toEosTransaction(transactionRequestParams, new PrivateKey(privateKey)).getPackedTx().getSignatures();
-        onTransactionCompleted.onTransactionCompletedSuccessCallback(signatures);
+    public void completeTransaction(TransactionRequestParams transactionRequestParams, Callback<String[]> callback) {
+        String[] signatures = ScatterHelper.toEosTransaction(transactionRequestParams,
+                new PrivateKey(privateKey)).getPackedTx().getSignatures();
+        callback.onSuccess(signatures);
     }
 
     @Override
-    public void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams,
-                                              SerializedTransactionCompleted onTransactionCompleted) {
+    public void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams, Callback<String[]> callback) {
         try {
             SerializedTransactionRequestParams.Network network = serializedTransactionRequestParams.getNetwork();
             ISerializationProvider abieos = new AbiEosSerializationProviderImpl();
@@ -92,35 +87,31 @@ public class MyScatterClient extends ScatterClient {
                 String json = serializationObject.getJson();
                 action.setData(json);
             }
-            String json = gson.toJson(bean);
-            Log.d(TAG, json);
             String[] signatures = ScatterHelper.getSignaturesForSerializedTransaction(
                     paramsTransaction.getSerializedTransaction(),
                     paramsTransaction.getChainId(), new PrivateKey(privateKey));
-            onTransactionCompleted.onTransactionCompletedSuccessCallback(signatures);
+            callback.onSuccess(signatures);
         } catch (Exception e) {
             e.printStackTrace();
-            onTransactionCompleted.onTransactionCompletedErrorCallback(ResultCode.NO_SIGNATURE, e.getMessage());
+            callback.onError(ResultCode.NO_SIGNATURE, e.getMessage());
         }
     }
 
     @Override
-    public void completeMsgTransaction(MsgTransactionRequestParams params, MsgTransactionCompleted onMsgTransactionCompleted) {
-        Log.d(TAG, "completeMsgTransaction() called with: params = [" + params + "], onMsgTransactionCompleted = [" + onMsgTransactionCompleted + "]");
+    public void completeMsgTransaction(MsgTransactionRequestParams params, Callback<String> callback) {
         byte[] data = (params.getIsHash()) ? Hex.decode(params.getData())
                 : HashUtil.sha256(params.getData().getBytes(StandardCharsets.UTF_8)).getBytes();
         Signature signature = Eos.signTransactionHashed(data, new PrivateKey(privateKey));
-        onMsgTransactionCompleted.onMsgTransactionCompletedSuccessCallback(signature.toString());
+        callback.onSuccess(signature.toString());
     }
 
     @Override
-    public void getPublicKey(PublicKeyReceived onPublicKeyReceived) {
-        onPublicKeyReceived.onPublicKeyReceivedSuccessCallback(publicKey);
+    public void getPublicKey(Callback<String> callback) {
+        callback.onSuccess(publicKey);
     }
 
     @Override
-    public void authenticate(AuthenticateRequestParams authenticateRequestParams,
-                             MsgTransactionCompleted onMsgTransactionMsgCompleted) {
+    public void authenticate(AuthenticateRequestParams authenticateRequestParams, Callback<String> callback) {
         boolean isHash = authenticateRequestParams.getData() != null;
         String toSign = isHash ? authenticateRequestParams.getData() : authenticateRequestParams.getOrigin();
         if (!TextUtils.isEmpty(toSign)) {
@@ -132,9 +123,9 @@ public class MyScatterClient extends ScatterClient {
                     Hex.toHexString(hashData),
                     authenticateRequestParams.getPublicKey() != null ? authenticateRequestParams.getPublicKey() : "",
                     isHash, "");
-            completeMsgTransaction(params, onMsgTransactionMsgCompleted);
+            completeMsgTransaction(params, callback);
         } else {
-            onMsgTransactionMsgCompleted.onMsgTransactionCompletedErrorCallback(ResultCode.NO_SIGNATURE, "data or origin is null");
+            callback.onError(ResultCode.NO_SIGNATURE, "data or origin is null");
         }
     }
 }
