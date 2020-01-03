@@ -25,29 +25,26 @@ public interface ScatterClient {
     /**
      * 返回签名信息
      *
-     * @param transactionRequestParams
+     * @param params
      * @param callback
      */
-    void completeTransaction(TransactionRequestParams transactionRequestParams,
-                             Callback<String[]> callback);
+    void completeTransaction(TransactionRequestParams params, Callback<String[]> callback);
 
     /**
      * 返回签名信息
      *
-     * @param serializedTransactionRequestParams
+     * @param params
      * @param callback
      */
-    void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams,
-                                       Callback<String[]> callback);
+    void completeSerializedTransaction(SerializedTransactionRequestParams params, Callback<String[]> callback);
 
     /**
      * 返回签名信息
      *
-     * @param msgTransactionRequestParams
+     * @param params
      * @param callback
      */
-    void completeMsgTransaction(MsgTransactionRequestParams msgTransactionRequestParams,
-                                Callback<String> callback);
+    void completeMsgTransaction(MsgTransactionRequestParams params, Callback<String> callback);
 
     /**
      * 返回公钥
@@ -59,11 +56,10 @@ public interface ScatterClient {
     /**
      * 返回签名信息
      *
-     * @param authenticateRequestParams
+     * @param params
      * @param callback
      */
-    void authenticate(AuthenticateRequestParams authenticateRequestParams,
-                      Callback<String> callback);
+    void authenticate(AuthenticateRequestParams params, Callback<String> callback);
 
     interface Callback<T> {
 
