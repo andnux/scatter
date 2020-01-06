@@ -18,6 +18,7 @@ import static top.andnux.scatter.models.Type.GET_VERSION;
 import static top.andnux.scatter.models.Type.IDENTITY_FROM_PERMISSIONS;
 import static top.andnux.scatter.models.Type.REQUEST_ARBITRARY_SIGNATURE;
 import static top.andnux.scatter.models.Type.REQUEST_SIGNATURE;
+import static top.andnux.scatter.models.Type.SUGGEST_NETWORK;
 
 class ScatterWebInterface {
 
@@ -33,6 +34,7 @@ class ScatterWebInterface {
 
     @JavascriptInterface
     public void pushMessage(String data) {
+        scatterClient.showLoading("loading...");
         Log.e("TAG", "pushMessage() called with: data = [" + data + "]");
         ScatterRequest scatterRequest = gson.fromJson(data, ScatterRequest.class);
         switch (scatterRequest.getMethodName()) {
@@ -47,7 +49,7 @@ class ScatterWebInterface {
                 break;
             }
             case REQUEST_SIGNATURE: {
-                ScatterJsService.handleRequestSignature(webView,scatterClient,scatterRequest);
+                ScatterJsService.handleRequestSignature(webView, scatterClient, scatterRequest);
                 break;
             }
             case AUTHENTICATE: {
@@ -63,10 +65,15 @@ class ScatterWebInterface {
                 break;
             }
             case FORGET_IDENTITY: {
-                ScatterJsService.forgetIdentity(webView, scatterClient,scatterRequest);
+                ScatterJsService.forgetIdentity(webView, scatterClient, scatterRequest);
+                break;
+            }
+            case SUGGEST_NETWORK: {
+                ScatterJsService.suggestNetwork(webView, scatterClient, scatterRequest);
                 break;
             }
             default:
+                scatterClient.hideLoading();
                 break;
         }
     }

@@ -102,9 +102,9 @@ class Index extends App{
 		this.identity = null
 	}
 
-	useIdentity(...args){
+	useIdentity(identity){
 	   return new Promise((resolve,reject) => {
-            window.wallet.sendApiRequest({type:"useIdentity",payload:args})
+            window.wallet.sendApiRequest({type:"useIdentity",payload:identity})
             .then(res => {
                 this.identity = res;
                 resolve(res)
@@ -171,15 +171,34 @@ class Index extends App{
     }
 
     linkAccount(publicKey, network) {
-         console.log('linkAccount')
-         return 0
+         return new Promise(async (resolve, reject) => {
+              window.wallet.sendApiRequest({
+                  type:'linkAccount',
+                  payload:{network:network,publicKey:publicKey}
+              }).then(x => {
+                  resolve(x)
+              }).catch(x => reject(x))
+         })
     }
     hasAccountFor(network) {
-        console.log('hasAccountFor')
-        return 0
+        return new Promise(async (resolve, reject) => {
+             window.wallet.sendApiRequest({
+                 type:'hasAccountFor',
+                 payload:{ network:network}
+             }).then(x => {
+                 resolve(x)
+             }).catch(x => reject(x))
+        })
     }
     suggestNetwork(network) {
-        return 0
+         return new Promise(async (resolve, reject) => {
+              window.wallet.sendApiRequest({
+                  type:'suggestNetwork',
+                  payload:{ network:network}
+              }).then(x => {
+                  resolve(x)
+              }).catch(x => reject(x))
+         })
     }
     requestTransfer(network, to, amount, options = {}) {
         console.log(JSON.stringify(network))
@@ -211,8 +230,8 @@ class Index extends App{
     }
 
     transact(t,e){
-        console.log('transact')
-        return 0
+         console.log('transact')
+         return 0
     }
 
 	eos (network, Eos, options) {

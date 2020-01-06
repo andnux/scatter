@@ -2,8 +2,6 @@ package top.andnux.scatter.socket;
 
 import android.util.Log;
 
-import top.andnux.scatter.ScatterClient;
-
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -11,6 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.net.InetSocketAddress;
+
+import top.andnux.scatter.ScatterClient;
 
 import static top.andnux.scatter.socket.SocketsConstants.MESSAGE_START;
 import static top.andnux.scatter.socket.models.Commands.API;
@@ -21,11 +21,11 @@ class ScatterWebSocket extends WebSocketServer {
 
     private static String TAG = "SOCKET";
 
-    private ScatterClient scatterClient;
+    private ScatterClient mScatterClient;
 
     public ScatterWebSocket(ScatterClient scatterClient) {
         super(new InetSocketAddress("0.0.0.0", 50005));
-        this.scatterClient = scatterClient;
+        mScatterClient = scatterClient;
     }
 
     @Override
@@ -41,6 +41,7 @@ class ScatterWebSocket extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         showLongLog(message);
+        mScatterClient.showLoading("loading...");
         if (!message.startsWith(MESSAGE_START)) return;
         try {
             JSONArray params = new JSONArray(message.substring(MESSAGE_START.length()));
@@ -50,7 +51,7 @@ class ScatterWebSocket extends WebSocketServer {
                     break;
                 }
                 case API: {
-                    ScatterSocketService.handleApiResponse(conn, params, scatterClient);
+                    ScatterSocketService.handleApiResponse(conn, params, mScatterClient);
                     break;
                 }
                 case REKEYED: {
@@ -58,6 +59,7 @@ class ScatterWebSocket extends WebSocketServer {
                     break;
                 }
                 default:
+                    mScatterClient.hideLoading();
                     break;
             }
         } catch (JSONException e) {

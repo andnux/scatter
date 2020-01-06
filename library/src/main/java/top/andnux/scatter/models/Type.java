@@ -22,12 +22,14 @@ public class Type {
     public static final String GET_AVATAR = "getAvatar";
     public static final String ADD_TOKEN = "addToken";
     public static final String HAS_ACCOUNT_FOR = "hasAccountFor";
+    public static final String SUGGEST_NETWORK = "suggestNetwork";
+    public static final String USE_IDENTITY = "useIdentity";
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({GET_VERSION, IDENTITY_FROM_PERMISSIONS, GET_OR_REQUEST_IDENTITY, AUTHENTICATE,
             FORGET_IDENTITY, REQUEST_ADD_NETWORK, REQUEST_SIGNATURE, REQUEST_ARBITRARY_SIGNATURE,
             GET_PUBLIC_KEY, LINK_ACCOUNT, REQUEST_TRANSFER, GET_AVATAR, GET_IDENTITY, ADD_TOKEN,
-            HAS_ACCOUNT_FOR})
+            HAS_ACCOUNT_FOR,SUGGEST_NETWORK,USE_IDENTITY})
     public @interface ScatterWalletTypes {
     }
 }

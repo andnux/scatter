@@ -74,7 +74,7 @@ public class ScatterSocketService {
             case IDENTITY_FROM_PERMISSIONS:
             case GET_IDENTITY:
             case GET_OR_REQUEST_IDENTITY: {
-                getIdentity(conn, id,payload, scatterClient);
+                getIdentity(conn, id, payload, scatterClient);
                 break;
             }
             case REQUEST_SIGNATURE: {
@@ -127,7 +127,7 @@ public class ScatterSocketService {
         }
     }
 
-    private static void getVersion(final WebSocket conn, final String id, ScatterClient scatterClient) {
+    private static void getVersion(final WebSocket conn, final String id, final ScatterClient scatterClient) {
         scatterClient.getAppInfo(new ScatterClient.Callback<AppInfoResponseData>() {
             @Override
             public void onSuccess(AppInfoResponseData data) {
@@ -139,13 +139,13 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
 
     }
 
-    private static void authenticate(final WebSocket conn, final String id, String payload, ScatterClient scatterClient) {
+    private static void authenticate(final WebSocket conn, final String id, String payload, final ScatterClient scatterClient) {
         AuthenticateRequestParams authRequestParams = gson.fromJson(payload, AuthenticateRequestParams.class);
         scatterClient.authenticate(authRequestParams, new ScatterClient.Callback<String>() {
             @Override
@@ -158,12 +158,12 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
     }
 
-    private static void getIdentity(final WebSocket conn, final String id,String payload, ScatterClient scatterClient) {
+    private static void getIdentity(final WebSocket conn, final String id, String payload, final ScatterClient scatterClient) {
         final EosAccount account = gson.fromJson(payload, EosAccount.class);
         scatterClient.getAccount(account, new ScatterClient.Callback<GetAccountResponse>() {
             @Override
@@ -174,12 +174,12 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
     }
 
-    private static void getPublicKey(final WebSocket conn, final String id, ScatterClient scatterClient) {
+    private static void getPublicKey(final WebSocket conn, final String id, final ScatterClient scatterClient) {
 
         scatterClient.getPublicKey(new ScatterClient.Callback<String>() {
             @Override
@@ -190,14 +190,14 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
     }
 
     private static void requestSignature(final WebSocket conn, final String id,
                                          TransactionRequestParams transactionRequestParams,
-                                         ScatterClient scatterClient) {
+                                         final ScatterClient scatterClient) {
         scatterClient.completeTransaction(transactionRequestParams, new ScatterClient.Callback<String[]>() {
             @Override
             public void onSuccess(String[] data) {
@@ -209,14 +209,14 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
     }
 
     private static void requestSerializedTransactionSignature(final WebSocket conn, final String id,
                                                               SerializedTransactionRequestParams serializedTransactionRequestParams,
-                                                              ScatterClient scatterClient) {
+                                                              final ScatterClient scatterClient) {
         scatterClient.completeSerializedTransaction(serializedTransactionRequestParams, new ScatterClient.Callback<String[]>() {
             @Override
             public void onSuccess(String[] data) {
@@ -226,13 +226,13 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
     }
 
     private static void requestMsgSignature(final WebSocket conn, final String id,
-                                            String payload, ScatterClient scatterClient) {
+                                            String payload, final ScatterClient scatterClient) {
         MsgTransactionRequestParams msgTransactionRequestParams = gson.fromJson(payload, MsgTransactionRequestParams.class);
         scatterClient.completeMsgTransaction(msgTransactionRequestParams, new ScatterClient.Callback<String>() {
             @Override
@@ -244,13 +244,14 @@ public class ScatterSocketService {
 
             @Override
             public void onError(ResultCode resultCode, String message) {
-                sendErrorResponse(conn, id, resultCode, message);
+                sendErrorResponse(conn, id, resultCode, message, scatterClient);
             }
         });
     }
 
     private static void sendErrorResponse(WebSocket conn, String id,
-                                          ResultCode resultCode, String messageToUser) {
+                                          ResultCode resultCode, String messageToUser, ScatterClient scatterClient) {
+        scatterClient.hideLoading();
         sendResponse(conn, gson.toJson(
                 new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id,
                         gson.toJson(new ErrorResponse(resultCode.getCode(), messageToUser, resultCode.name()))))))
@@ -258,6 +259,7 @@ public class ScatterSocketService {
     }
 
     private static void sendBooleanTrueResponse(WebSocket conn, String id, ScatterClient scatterClient) {
+        scatterClient.hideLoading();
         sendResponse(conn,
                 gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
                         new ApiResponseData(id, gson.toJson(true)))))
