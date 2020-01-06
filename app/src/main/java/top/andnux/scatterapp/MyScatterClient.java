@@ -22,6 +22,7 @@ import one.block.eosiojavaabieosserializationprovider.AbiEosSerializationProvide
 import one.block.eosiojavarpcprovider.implementations.EosioJavaRpcProviderImpl;
 import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.models.AbiResponse;
+import top.andnux.scatter.models.Network;
 import top.andnux.scatter.models.TransactionBean;
 import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
@@ -31,6 +32,7 @@ import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransaction;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
+import top.andnux.scatter.models.requests.suggestnetwork.SuggestNetwork;
 import top.andnux.scatter.models.requests.transaction.request.TransactionRequestParams;
 import top.andnux.scatter.models.response.ResultCode;
 import top.andnux.scatter.util.ScatterHelper;
@@ -44,6 +46,16 @@ public class MyScatterClient implements ScatterClient {
 //    private static final String accountName = "zhangchunlin";
 //    private static final String privateKey = "5JNNm5t64sC6HRXT2oMDJJSULyciSHztpqKqdm62RHChvBjmMSB";
 //    private static final String publicKey = "EOS76pwnQG8tdctc4ytSXZEGjVhQdkLXgyFFZ1dWGf3iAU4PRMbqq";
+
+    @Override
+    public void showLoading(String message) {
+
+    }
+
+    @Override
+    public void hideLoading() {
+
+    }
 
     @Override
     public void getAppInfo(Callback<AppInfoResponseData> callback) {
@@ -79,11 +91,11 @@ public class MyScatterClient implements ScatterClient {
     @Override
     public void completeSerializedTransaction(SerializedTransactionRequestParams serializedTransactionRequestParams, Callback<String[]> callback) {
         try {
-            SerializedTransactionRequestParams.Network network = serializedTransactionRequestParams.getNetwork();
+            Network network = serializedTransactionRequestParams.getNetwork();
             ISerializationProvider abieos = new AbiEosSerializationProviderImpl();
             SerializedTransaction paramsTransaction = serializedTransactionRequestParams.getTransaction();
             String transactionJson = abieos.deserializeTransaction(paramsTransaction.getSerializedTransaction());
-            String baseURL = network.toUrl();
+            String baseURL = network.toString();
             EosioJavaRpcProviderImpl provider = new EosioJavaRpcProviderImpl(baseURL);
             Gson gson = new Gson();
             TransactionBean bean = gson.fromJson(transactionJson, TransactionBean.class);
@@ -141,6 +153,11 @@ public class MyScatterClient implements ScatterClient {
         } else {
             callback.onError(ResultCode.NO_SIGNATURE, "data or origin is null");
         }
+    }
+
+    @Override
+    public void suggestNetwork(SuggestNetwork params, Callback<Network> callback) {
+
     }
 
     @Override
