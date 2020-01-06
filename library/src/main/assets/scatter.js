@@ -139,7 +139,7 @@ class Index extends App{
 
 	getIdentityFromPermissions() {
 		return new Promise((resolve,reject) => {
-            window.wallet.sendApiRequest({type:"getIdentityFromPermissions",payload:{}})
+            window.wallet.sendApiRequest({type:"identityFromPermissions",payload:{}})
             .then(res => {
                  this.identity = res;
                 resolve(res)
@@ -171,15 +171,14 @@ class Index extends App{
     }
 
     linkAccount(publicKey, network) {
-           throwNoAuth();
-           return 0
+         console.log('linkAccount')
+         return 0
     }
     hasAccountFor(network) {
-        throwNoAuth();
+        console.log('hasAccountFor')
         return 0
     }
     suggestNetwork(network) {
-        throwNoAuth();
         return 0
     }
     requestTransfer(network, to, amount, options = {}) {
@@ -207,12 +206,12 @@ class Index extends App{
        })
     }
     createTransaction(blockchain, actions, account, network) {
-        throwNoAuth();
+        console.log('createTransaction')
         return 0
     }
 
     transact(t,e){
-        throwNoAuth();
+        console.log('transact')
         return 0
     }
 

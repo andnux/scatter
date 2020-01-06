@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 import top.andnux.scatter.ScatterClient;
-import top.andnux.scatter.models.ProtocolInfo;
 import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.eosaccount.EosAccount;
-import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
@@ -261,7 +259,8 @@ public class ScatterSocketService {
 
     private static void sendBooleanTrueResponse(WebSocket conn, String id, ScatterClient scatterClient) {
         sendResponse(conn,
-                gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API, new ApiResponseData(id, gson.toJson(true)))))
+                gson.toJson(new ArrayList<>(Arrays.asList(CommandsResponse.API,
+                        new ApiResponseData(id, gson.toJson(true)))))
         );
     }
 

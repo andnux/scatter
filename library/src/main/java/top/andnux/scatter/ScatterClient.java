@@ -3,7 +3,6 @@ package top.andnux.scatter;
 import top.andnux.scatter.models.requests.appinfo.AppInfoResponseData;
 import top.andnux.scatter.models.requests.authenticate.AuthenticateRequestParams;
 import top.andnux.scatter.models.requests.eosaccount.EosAccount;
-import top.andnux.scatter.models.requests.getaccount.Account;
 import top.andnux.scatter.models.requests.getaccount.GetAccountResponse;
 import top.andnux.scatter.models.requests.msgtransaction.MsgTransactionRequestParams;
 import top.andnux.scatter.models.requests.serializedtransaction.SerializedTransactionRequestParams;
@@ -23,7 +22,7 @@ public interface ScatterClient {
      * @param account
      * @param callback
      */
-    void getAccount(EosAccount account,Callback<GetAccountResponse> callback);
+    void getAccount(EosAccount account, Callback<GetAccountResponse> callback);
 
     /**
      * 返回签名信息
@@ -64,6 +63,18 @@ public interface ScatterClient {
      */
     void authenticate(AuthenticateRequestParams params, Callback<String> callback);
 
+    /**
+     * 退出登录
+     *
+     * @param callback
+     */
+    void forgetIdentity(Callback<Boolean> callback);
+
+    /**
+     * 回调
+     *
+     * @param <T>
+     */
     interface Callback<T> {
 
         void onSuccess(T data);

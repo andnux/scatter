@@ -9,8 +9,15 @@ import com.google.gson.Gson;
 import top.andnux.scatter.ScatterClient;
 import top.andnux.scatter.js.models.ScatterRequest;
 
-import static top.andnux.scatter.js.ScatterJsService.*;
-import static top.andnux.scatter.models.Type.*;
+import static top.andnux.scatter.models.Type.ADD_TOKEN;
+import static top.andnux.scatter.models.Type.AUTHENTICATE;
+import static top.andnux.scatter.models.Type.FORGET_IDENTITY;
+import static top.andnux.scatter.models.Type.GET_IDENTITY;
+import static top.andnux.scatter.models.Type.GET_OR_REQUEST_IDENTITY;
+import static top.andnux.scatter.models.Type.GET_VERSION;
+import static top.andnux.scatter.models.Type.IDENTITY_FROM_PERMISSIONS;
+import static top.andnux.scatter.models.Type.REQUEST_ARBITRARY_SIGNATURE;
+import static top.andnux.scatter.models.Type.REQUEST_SIGNATURE;
 
 class ScatterWebInterface {
 
@@ -30,31 +37,33 @@ class ScatterWebInterface {
         ScatterRequest scatterRequest = gson.fromJson(data, ScatterRequest.class);
         switch (scatterRequest.getMethodName()) {
             case GET_VERSION: {
-                getAppInfo(webView, scatterClient, scatterRequest);
+                ScatterJsService.getAppInfo(webView, scatterClient, scatterRequest);
                 break;
             }
             case IDENTITY_FROM_PERMISSIONS:
             case GET_IDENTITY:
             case GET_OR_REQUEST_IDENTITY: {
-                getEosAccount(webView, scatterClient, scatterRequest);
+                ScatterJsService.getEosAccount(webView, scatterClient, scatterRequest);
                 break;
             }
             case REQUEST_SIGNATURE: {
-                handleRequestSignature(webView,scatterClient,scatterRequest);
+                ScatterJsService.handleRequestSignature(webView,scatterClient,scatterRequest);
                 break;
             }
             case AUTHENTICATE: {
                 ScatterJsService.authenticate(webView, scatterClient, scatterRequest);
                 break;
             }
-
             case ADD_TOKEN: {
                 ScatterJsService.addToken(webView, scatterClient, scatterRequest);
                 break;
             }
-
             case REQUEST_ARBITRARY_SIGNATURE: {
-                requestMsgSignature(webView, scatterClient, scatterRequest);
+                ScatterJsService.requestMsgSignature(webView, scatterClient, scatterRequest);
+                break;
+            }
+            case FORGET_IDENTITY: {
+                ScatterJsService.forgetIdentity(webView, scatterClient,scatterRequest);
                 break;
             }
             default:

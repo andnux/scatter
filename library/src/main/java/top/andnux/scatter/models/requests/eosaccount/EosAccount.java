@@ -10,6 +10,60 @@ public class EosAccount implements Serializable {
 
     private List<AccountsBean> accounts;
     private String origin;
+    private String blockchain;
+    private String host;
+    private String port;
+    private String protocol;
+    private String chainId;
+    private String httpEndpoint;
+
+    public String getBlockchain() {
+        return blockchain;
+    }
+
+    public void setBlockchain(String blockchain) {
+        this.blockchain = blockchain;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getPort() {
+        return port;
+    }
+
+    public void setPort(String port) {
+        this.port = port;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+    public String getChainId() {
+        return chainId;
+    }
+
+    public void setChainId(String chainId) {
+        this.chainId = chainId;
+    }
+
+    public String getHttpEndpoint() {
+        return httpEndpoint;
+    }
+
+    public void setHttpEndpoint(String httpEndpoint) {
+        this.httpEndpoint = httpEndpoint;
+    }
 
     public String getOrigin() {
         return origin;

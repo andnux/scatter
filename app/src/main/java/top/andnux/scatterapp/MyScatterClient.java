@@ -142,4 +142,9 @@ public class MyScatterClient implements ScatterClient {
             callback.onError(ResultCode.NO_SIGNATURE, "data or origin is null");
         }
     }
+
+    @Override
+    public void forgetIdentity(Callback<Boolean> callback) {
+        callback.onSuccess(true);
+    }
 }

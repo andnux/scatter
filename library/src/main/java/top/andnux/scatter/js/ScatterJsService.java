@@ -22,9 +22,11 @@ import top.andnux.scatter.models.response.ErrorResponse;
 import top.andnux.scatter.models.response.ResultCode;
 
 final class ScatterJsService {
+
     final static private Gson gson = new Gson();
 
     private ScatterJsService() {
+
     }
 
     static void getAppInfo(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {
@@ -47,13 +49,7 @@ final class ScatterJsService {
     }
 
     static void getEosAccount(final WebView webView, final ScatterClient scatterClient, final ScatterRequest scatterRequest) {
-        EosAccount account;
-        try {
-            account = gson.fromJson(scatterRequest.getParams(), EosAccount.class);
-        } catch (Exception ignored) {
-            account = new EosAccount();
-        }
-        account.setOrigin(scatterRequest.getParams());
+        EosAccount account = gson.fromJson(scatterRequest.getParams(), EosAccount.class);
         scatterClient.getAccount(account, new ScatterClient.Callback<GetAccountResponse>() {
             @Override
             public void onSuccess(GetAccountResponse data) {
@@ -120,6 +116,7 @@ final class ScatterJsService {
 
     static void requestMsgSignature(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {
         final MsgTransactionRequestParams msgTransactionRequestParams = gson.fromJson(scatterRequest.getParams(), MsgTransactionRequestParams.class);
+        msgTransactionRequestParams.setRow(msgTransactionRequestParams.getData());
         scatterClient.completeMsgTransaction(msgTransactionRequestParams, new ScatterClient.Callback<String>() {
             @Override
             public void onSuccess(String data) {
@@ -135,39 +132,38 @@ final class ScatterJsService {
         });
     }
 
+
+    static void forgetIdentity(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {
+        scatterClient.forgetIdentity(new ScatterClient.Callback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean data) {
+                sendResponse(webView, scatterRequest.getCallback(), gson.toJson(
+                        new ScatterResponse(ResultCode.SUCCESS.name(), gson.toJson(data), ResultCode.SUCCESS.getCode())
+                ));
+            }
+
+            @Override
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorScript(webView, scatterRequest.getCallback(), resultCode, message);
+            }
+        });
+    }
+
     static void authenticate(final WebView webView, ScatterClient scatterClient, final ScatterRequest scatterRequest) {
-        try {
-            AuthenticateRequestParams authRequestParams = gson.fromJson(scatterRequest.getParams(), AuthenticateRequestParams.class);
-            scatterClient.authenticate(authRequestParams, new ScatterClient.Callback<String>() {
-                @Override
-                public void onSuccess(String data) {
-                    sendResponse(webView, scatterRequest.getCallback(),
-                            gson.toJson(new ScatterResponse(ResultCode.SUCCESS.name(), gson.toJson(data),
-                                    ResultCode.SUCCESS.getCode())));
-                }
+        AuthenticateRequestParams authRequestParams = gson.fromJson(scatterRequest.getParams(), AuthenticateRequestParams.class);
+        scatterClient.authenticate(authRequestParams, new ScatterClient.Callback<String>() {
+            @Override
+            public void onSuccess(String data) {
+                sendResponse(webView, scatterRequest.getCallback(),
+                        gson.toJson(new ScatterResponse(ResultCode.SUCCESS.name(), gson.toJson(data),
+                                ResultCode.SUCCESS.getCode())));
+            }
 
-                @Override
-                public void onError(ResultCode resultCode, String message) {
-                    sendErrorScript(webView, scatterRequest.getCallback(), resultCode, message);
-                }
-            });
-        } catch (Exception e) {
-            AuthenticateRequestParams params = new AuthenticateRequestParams(String.valueOf(System.currentTimeMillis()),
-                    null, null, scatterRequest.getParams());
-            scatterClient.authenticate(params, new ScatterClient.Callback<String>() {
-                @Override
-                public void onSuccess(String data) {
-                    sendResponse(webView, scatterRequest.getCallback(),
-                            gson.toJson(new ScatterResponse(ResultCode.SUCCESS.name(), gson.toJson(data),
-                                    ResultCode.SUCCESS.getCode())));
-                }
-
-                @Override
-                public void onError(ResultCode resultCode, String message) {
-                    sendErrorScript(webView, scatterRequest.getCallback(), resultCode, message);
-                }
-            });
-        }
+            @Override
+            public void onError(ResultCode resultCode, String message) {
+                sendErrorScript(webView, scatterRequest.getCallback(), resultCode, message);
+            }
+        });
     }
 
     private static void sendErrorScript(WebView webView, String callback, ResultCode resultCode, String messageToUser) {

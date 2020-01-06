@@ -62,7 +62,8 @@ public class ScatterHelper {
     }
 
     private static EosAction toEosAction(Action action) {
-        return new EosAction(action.getAccount(), action.getName(), getEosActionAuthorization(action), Hex.decode(action.getData()));
+        return new EosAction(action.getAccount(), action.getName(), getEosActionAuthorization(action),
+                Hex.decode((String) action.getData()));
     }
 
     private static EosActionAuthorization[] getEosActionAuthorization(Action action) {
